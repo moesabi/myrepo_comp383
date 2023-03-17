@@ -6,7 +6,7 @@ This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCM
 The first step is to download the RNA sequencing data for four samples from the Sequence Read Archive (SRA) using wget.
 ```python
 import os
-
+# Download SRR5660030..033..44..45 file from the SRA database
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660030/SRR5660030')
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660033/SRR5660033')
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660044/SRR5660044')
@@ -18,6 +18,12 @@ os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660045/SRR56600
 The next step is to preprocess the data using fastq-dump to convert the SRA files to FASTQ format.
 
 ```python
+
+import os 
+
+#split the separate forward and reverse reads and convert the specified SRA files into FASTQ format using -I and --split
+
+
 os.system('fastq-dump -I --split-files SRR5660030')
 os.system('fastq-dump -I --split-files SRR5660033')
 os.system('fastq-dump -I --split-files SRR5660044')
@@ -30,16 +36,16 @@ We will use the HCMV genome as the reference genome for our analysis. We will do
 import os
 import Bio
 from Bio import Entrez
-
+# Fetch the HCMV genome sequence from the NCBI nucleotide database
 Entrez.email = "mohammed16alsawi@gmail.com"
 handle = Entrez.efetch(db="nucleotide", id='NC_006273.2', rettype='fasta')
 fasta = handle.read()
 handle.close()
 with open('HCMV.fasta', 'w') as f:
     f.write(fasta)
-
+# Build the Bowtie2 index using the HCMV genome sequence
 os.system('bowtie2-build HCMV.fasta HCMV')
-
+# Run Bowtie2 alignment for each of the four samples
 print('starting bowtie2 .sam')
 os.system('bowtie2 --quiet -x HCMV -1 SRR5660030_1.fastq -2 SRR5660030_2.fastq -S HCMV30mapped.sam')
 os.system('bowtie2 --quiet -x HCMV -1 SRR5660033_1.fastq -2 SRR5660033_2.fastq -S HCMV33mapped.sam')
@@ -133,7 +139,7 @@ with open('log.txt', 'a') as log_file:
  
  from Bio import SeqIO
 
-# Input file: Replace 'contigs.fasta' with the name of your assembly file
+# Input file
 assembly_file = 'contigs.fasta'
 
 # Initialize counters
@@ -163,7 +169,7 @@ from Bio import SeqIO
 from Bio.Blast import NCBIWWW, NCBIXML
 
 # Read the SPAdes assembly output and find the longest contig
-assembly_file = "contigs.fasta"  # Replace with your SPAdes output file
+assembly_file = "contigs.fasta"  
 contigs = SeqIO.parse(assembly_file, "fasta")
 longest_contig = max(contigs, key=lambda x: len(x))
 
