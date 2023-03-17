@@ -156,7 +156,7 @@ with open('log.txt', 'a') as log_file:
 
 ```
 #Analyzing HCMV Transcriptomes Using SPAdes and BLAST
-
+reads the SPAdes assembly output and identifies the longest contig which is then saved to a file. The longest contig is then used in a BLAST+ NCBI nr  
 ```python
  
 from Bio import SeqIO
@@ -195,6 +195,7 @@ with open("blast_result.xml", "w") as output_file:
 result_handle.close()
 ```
 #Perform BLAST search on longest contig from SPAdes assembly
+outputs the top 10 outputs with the criteria, "sacc   pident   length   qstart   qend   sstart   send   bitscore   evalue   stitle"
 
 ```python
 
