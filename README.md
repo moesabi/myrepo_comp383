@@ -2,7 +2,7 @@
 # HCMV Transcriptome Analysis Pipeline
 This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCMV) using RNA sequencing data.
 
-# Step 1: Download the Data
+# Download the Data
 The first step is to download the RNA sequencing data for four samples from the Sequence Read Archive (SRA) using wget.
 ```python
 import os
@@ -13,7 +13,7 @@ os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660044/SRR56600
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660045/SRR5660045')
 ```
 
-# Step 2: Preprocess the Data
+# Preprocess the Data
 
 The next step is to preprocess the data using fastq-dump to convert the SRA files to FASTQ format.
 
@@ -24,7 +24,7 @@ os.system('fastq-dump -I --split-files SRR5660044')
 os.system('fastq-dump -I --split-files SRR5660045')
 ```
 
-# Step 3: Build the Reference Genome
+# Build the Reference Genome
 We will use the HCMV genome as the reference genome for our analysis. We will download the genome from NCBI and use bowtie2-build to build the index.
 ```python
 import os
@@ -42,7 +42,7 @@ os.system('bowtie2-build HCMV.fasta HCMV')
 
 ```
 
-# Step 4: Map the Reads to the Reference Genome
+# Map the Reads to the Reference Genome
 We will use bowtie2 to map the reads to the reference genome and filter out the unmapped reads.
 ```python
 import os
@@ -71,7 +71,7 @@ for s in samples_list:
             flag_val
 
 ```
-# Step 5: Assembling the Longest Contig and Running BLAST+ Search
+# Assembling the Longest Contig and Running BLAST+ Search
 
 
 
