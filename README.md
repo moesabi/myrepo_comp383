@@ -40,6 +40,12 @@ with open('HCMV.fasta', 'w') as f:
 
 os.system('bowtie2-build HCMV.fasta HCMV')
 
+print('starting bowtie2 .sam')
+os.system('bowtie2 --quiet -x HCMV -1 SRR5660030_1.fastq -2 SRR5660030_2.fastq -S HCMV30mapped.sam')
+os.system('bowtie2 --quiet -x HCMV -1 SRR5660033_1.fastq -2 SRR5660033_2.fastq -S HCMV33mapped.sam')
+os.system('bowtie2 --quiet -x HCMV -1 SRR5660044_1.fastq -2 SRR5660044_2.fastq -S HCMV44mapped.sam')
+os.system('bowtie2 --quiet -x HCMV -1 SRR5660045_1.fastq -2 SRR5660045_2.fastq -S HCMV45mapped.sam')
+
 ```
 
 # Map the Reads to the Reference Genome
@@ -68,14 +74,90 @@ for s in samples_list:
                 continue
 
             parts = line.split('\t')
-            flag_val
+            flag_val = int(parts[1])
+
+            if flag_val & 4 == 0:
+                post_filter_counts += 1
+                qname_val = parts[0]
+                seq_val = parts[9]
+                qual_val = parts[10]
+                fastqfile.write(f"@{qname_val}\n{seq_val}\n+\n{qual_val}\n")
+
+    post_filter_counts /= 4
+    print(f'{s} has {post_filter_counts:,} read pairs after filtering')
+
+    # Writing read counts to a file
+    with open('log.txt', 'a') as logfile:
+        logfile.write(f'{s} has {initial_counts[s]:,} read pairs before filtering and {post_filter_counts:,} read pairs after filtering.\n')
+
+
+
+
+
 
 ```
+# SPAdes assembly 
+We  use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to a log file
+```python
+import os
+
+samples = {
+    'SRR5660030': ('SRR5660030_HCMV.fastq'),
+    'SRR5660033': ('SRR5660033_HCMV.fastq'),
+    'SRR5660044': ('SRR5660044_HCMV.fastq'),
+    'SRR5660045': ('SRR5660045_HCMV.fastq'),
+}
+
+# Assemble all four transcriptomes together using SPAdes
+spades_input = ''
+for index, (sample_name, fq) in enumerate(samples.items(), start=1):
+    spades_input += f'--s{index} {fq} '
+
+spades_command = f'spades.py -k 77,99,127 -t 4 --only-assembler {spades_input.strip()} -o HCMV_SRR_assembly'
+os.system(spades_command)
+
+# Write the SPAdes command to the log file
+with open('log.txt', 'a') as log_file:
+    log_file.write(f'SPAdes command: {spades_command}\n')
+    
+    
+```
+
+
+
 # Assembling the Longest Contig and Running BLAST+ Search
 
 
 
  ```python
+ 
+ from Bio import SeqIO
+
+# Input file: Replace 'contigs.fasta' with the name of your assembly file
+assembly_file = 'contigs.fasta'
+
+# Initialize counters
+contigs_gt_1000 = 0
+assembly_length = 0
+
+# Iterate through contigs in the assembly file
+for record in SeqIO.parse(assembly_file, 'fasta'):
+    contig_length = len(record.seq)
+    
+    # Check if contig length is greater than 1000
+    if contig_length > 1000:
+        contigs_gt_1000 += 1
+        assembly_length += contig_length
+
+# Write results to the log file
+with open('log.txt', 'a') as log_file:
+    log_file.write(f'There are {contigs_gt_1000} contigs > 1000 bp in the assembly.\n')
+    log_file.write(f'There are {assembly_length} bp in the assembly.\n')
+
+```
+#Analyzing HCMV Transcriptomes Using SPAdes and BLAST
+
+```python
  
 from Bio import SeqIO
 from Bio.Blast import NCBIWWW, NCBIXML
@@ -112,9 +194,10 @@ with open("blast_result.xml", "w") as output_file:
 
 result_handle.close()
 ```
-Perform BLAST search on longest contig from SPAdes assembly
+#Perform BLAST search on longest contig from SPAdes assembly
 
 ```python
+
 from Bio.Blast import NCBIXML
 
 # Parse the BLAST result XML file
@@ -136,4 +219,5 @@ with open("blast_top_hits.log", "w") as log_file:
 
             # Write the output line to the log file
             log_file.write(output_line)
+
             ```
