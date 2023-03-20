@@ -3,11 +3,11 @@
 This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCMV) using RNA sequencing data.
 
 # Download the Data
-The first step is to download the RNA sequencing data for four samples from the Sequence Read Archive (SRA) using wget.
+The first step is to download the RNA sequencing data for four samples from the Sequence Read Archive (SRA) using wget. We are going to use python scripts
 ```python
 import os
 # Download SRR5660030..033..44..45 file from the SRA database
-os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660030/SRR5660030')
+os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660030/SRR5660030') #convertsfrompythontobeUNIX
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660033/SRR5660033')
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660044/SRR5660044')
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660045/SRR5660045')
