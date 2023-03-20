@@ -52,7 +52,7 @@ os.system('bowtie2 --quiet -x HCMV -1 SRR5660033_1.fastq -2 SRR5660033_2.fastq -
 os.system('bowtie2 --quiet -x HCMV -1 SRR5660044_1.fastq -2 SRR5660044_2.fastq -S HCMV44mapped.sam')
 os.system('bowtie2 --quiet -x HCMV -1 SRR5660045_1.fastq -2 SRR5660045_2.fastq -S HCMV45mapped.sam')
 
-#Output file in GitHub as "log1_reads_transcriptome_b4_Bowtie.txt"
+
 
 ```
 
@@ -170,7 +170,7 @@ with open('log.txt', 'a') as log_file:
     log_file.write(f'There are {assembly_length} bp in the assembly.\n') # writes the total assembly length
 
 
-#Output file in GitHub as "log2_nmbr_contigs_nmbr_assmbly.txt"
+
 ```
 # Analyzing HCMV Transcriptomes Using SPAdes and BLAST
 
@@ -246,5 +246,5 @@ with open("blast_top_hits.log", "w") as log_file:
             log_file.write(output_line)
 
 
-#Output file in GitHub as "Top_10_blast_top_hits.log"
+#Output file in GitHub as "PipelineProject.log"
 ```
