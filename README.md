@@ -1,6 +1,6 @@
 # myrepo_comp383 
 # HCMV Transcriptome Analysis Pipeline
-This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCMV) using specific sequencing data.
+This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCMV) using specific sequencing data. The only neccesary tools to run this is Python.
 
 # Download the Data
 The first step is to download the RNA sequencing data for four samples from the Sequence Read Archive (SRA) using wget. We are going to use python scripts
@@ -15,7 +15,7 @@ os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660045/SRR56600
 
 # Preprocess the Data
 
-The next step is to preprocess the data using fastq-dump to convert the SRA files to FASTQ format.
+The next step is to preprocess the data using fastq-dump to convert the SRA files to FASTQ format. The neccesary tools to run this are, Python and SRA Toolkit.
 
 ```python
 
@@ -31,7 +31,7 @@ os.system('fastq-dump -I --split-files SRR5660045')
 ```
 
 # Build the Reference Genome
-Use the HCMV genome as the reference genome for analysis. Download the genome from NCBI and use bowtie2-build to build the index.
+Use the HCMV genome as the reference genome for analysis. Download the genome from NCBI and use bowtie2-build to build the index. The neccesary tools to run this are, Python, Biopython, and Bowtie2.
 ```python
 import os  
 import Bio
@@ -57,7 +57,7 @@ os.system('bowtie2 --quiet -x HCMV -1 SRR5660045_1.fastq -2 SRR5660045_2.fastq -
 ```
 
 # Map the Reads to the Reference Genome
-Use bowtie2 to map the reads to the reference genome and filter out the unmapped reads.
+Use bowtie2 to map the reads to the reference genome and filter out the unmapped reads. The neccesary tools to run this are, Python and Bowtie2.
 ```python
 import os
 
@@ -110,7 +110,7 @@ for s in samples_list:
 
 ```
 # SPAdes assembly 
-Use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to the log file
+Use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to the log file. The neccesary tools to run this are, Python and SPAdes.
 ```python
 import os
 # define the dictionary to store sample names and their corresponding FASTQ files
@@ -141,7 +141,7 @@ with open('PipelineProject.log', 'a') as log_file:
 
 
 # Assembling the Longest Contig and Running BLAST+ Search
-Parse the file containing contigs in FASTA format and count the number of contigs longer than 1000 bp and then calculate the total assembly length and write the results to the log file.
+Parse the file containing contigs in FASTA format and count the number of contigs longer than 1000 bp and then calculate the total assembly length and write the results to the log file. The neccesary tools to run this are, Python and Biopython. 
 
  ```python
  
@@ -174,7 +174,7 @@ with open("PipelineProject.log", 'a') as log_file:
 ```
 # Analyzing HCMV Transcriptomes Using SPAdes and BLAST
 
-Read the SPAdes assembly output file, find the longest contig, and save to a new file. Then uses the longest contig as a query to perform a BLAST+ search against the nr nucleotide database and saves the results in an XML file.
+Read the SPAdes assembly output file, find the longest contig, and save to a new file. Then uses the longest contig as a query to perform a BLAST+ search against the nr nucleotide database and saves the results in an XML file. The neccesary tools to run this are, Python, Biopython, and BLAST+.
 
 ```python
  
@@ -219,7 +219,7 @@ result_handle.close() #close the result handle
 
 # Perform BLAST search on longest contig from SPAdes assembly
 
-Parse the BLAST result XML file using NCBIXML module and extract the top 10 alignments for each. Write into to the log file, including the accession number, percentage identity, alignment length, query start and end, subject start and end, bitscore, e-value, and alignment title
+Parse the BLAST result XML file using NCBIXML module and extract the top 10 alignments for each. Write into to the log file, including the accession number, percentage identity, alignment length, query start and end, subject start and end, bitscore, e-value, and alignment title. The neccesary tools to run this are, Python, Biopython, and BLAST+.
 
 ```python
 
