@@ -13,21 +13,38 @@ os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660044/SRR56600
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660045/SRR5660045')
 ```
 
-# Preprocess the Data
+# Preprocess the Data and Gather Test Data
 
-The next step is to preprocess the data using fastq-dump to convert the SRA files to FASTQ format. The neccesary tools to run this are, Python and SRA Toolkit.
+The next step is to preprocess the data using fastq-dump to convert the SRA files to FASTQ format. The neccesary tools to run this are, Python and SRA Toolkit. subsets of the files are used to test, modify with "SRR5660030_1_subset.fastq..." when testing
 
 ```python
 
-import os 
+import os
 
 #split the forward and reverse reads and convert the SRA files into FASTQ format using "-I" and "--split"
-
-
 os.system('fastq-dump -I --split-files SRR5660030')
 os.system('fastq-dump -I --split-files SRR5660033')
 os.system('fastq-dump -I --split-files SRR5660044')
 os.system('fastq-dump -I --split-files SRR5660045')
+
+# This function to creates small subsets of reads that are used for testing
+def create_test_subset(input_file, output_file, num_reads):
+    with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
+        for _ in range(num_reads * 4):  # Each read has 4 lines
+            line = infile.readline() #files
+            outfile.write(line)
+
+# Create small subsets for each sample
+samples_list = ['SRR5660030', 'SRR5660033', 'SRR5660044', 'SRR5660045']
+num_reads = 1000  #the number of reads in the subset, can be changed
+
+for sample in samples_list: # Test Data
+    create_test_subset(f'{sample}_1.fastq', f'{sample}_1_subset.fastq', num_reads)
+    create_test_subset(f'{sample}_2.fastq', f'{sample}_2_subset.fastq', num_reads)
+
+
+
+
 ```
 
 # Build the Reference Genome
@@ -128,7 +145,7 @@ for index, (sample_name, fq) in enumerate(samples.items(), start=1): # loop thro
     # appends the current sample's input flag and FASTQ file to the spades_input string
     spades_input += f'--s{index} {fq} '
 
-spades_command = f'spades.py -k 77,99,127 -t 4 --only-assembler {spades_input.strip()} -o HCMV_SRR_assembly'
+spades_command = f'spades.py -k 77,99,127 -t 2 --only-assembler {spades_input.strip()} -o HCMV_SRR_assembly'
 os.system(spades_command)
 
 # wite the SPAdes command to the log file
