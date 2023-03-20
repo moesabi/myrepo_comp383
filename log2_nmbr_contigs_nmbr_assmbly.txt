@@ -1,2 +1,0 @@
-There are 54 contigs > 1000 bp in the assembly.
-There are 194205 bp in the assembly.
