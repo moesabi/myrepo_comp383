@@ -97,7 +97,7 @@ for s in samples_list:
     post_filter_counts /= 4 # divides the post-filter count by 4 to get the number of all read pairs
     print(f'{s} has {post_filter_counts:,} read pairs after filtering')
 
-    # Writing read counts to a file
+    # appends the read counts to a file
     with open('log.txt', 'a') as logfile: # appends the read counts to a log file
         logfile.write(f'{s} has {initial_counts[s]:,} read pairs before filtering and {post_filter_counts:,} read pairs after filtering.\n')
 
@@ -111,7 +111,7 @@ for s in samples_list:
 We  use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to a log file
 ```python
 import os
-
+# define the dictionary to store sample names and their corresponding FASTQ files
 samples = {
     'SRR5660030': ('SRR5660030_HCMV.fastq'),
     'SRR5660033': ('SRR5660033_HCMV.fastq'),
@@ -119,15 +119,17 @@ samples = {
     'SRR5660045': ('SRR5660045_HCMV.fastq'),
 }
 
-# Assemble all four transcriptomes together using SPAdes
-spades_input = ''
-for index, (sample_name, fq) in enumerate(samples.items(), start=1):
+#assemble all four transcriptomes together using SPAdes
+
+spades_input = '' #initializes the empty string to store input arguments for the SPAdes command
+for index, (sample_name, fq) in enumerate(samples.items(), start=1): # loop through all of the samples by extracting the sample name and FASTQ file
+    # appends the current sample's input flag and FASTQ file to the spades_input string
     spades_input += f'--s{index} {fq} '
 
 spades_command = f'spades.py -k 77,99,127 -t 4 --only-assembler {spades_input.strip()} -o HCMV_SRR_assembly'
 os.system(spades_command)
 
-# Write the SPAdes command to the log file
+# wite the SPAdes command to the log file
 with open('log.txt', 'a') as log_file:
     log_file.write(f'SPAdes command: {spades_command}\n')
     
