@@ -146,26 +146,28 @@ with open('log.txt', 'a') as log_file:
  
  from Bio import SeqIO
 
-# Input file
+# define the assembly file and makes the input file containing contigs in FASTA format
 assembly_file = 'contigs.fasta'
 
-# Initialize counters
-contigs_gt_1000 = 0
-assembly_length = 0
+# initialize counters
+contigs_gt_1000 = 0 # initialize counter for the number of contigs > 1000 bp
+assembly_length = 0 # initialize a variable to store the total assembly length
 
-# Iterate through contigs in the assembly file
-for record in SeqIO.parse(assembly_file, 'fasta'):
+#Iterate's through contigs in the assembly file
+for record in SeqIO.parse(assembly_file, 'fasta'): 
+    # calculates the length of the current contig
     contig_length = len(record.seq)
     
-    # Check if contig length is greater than 1000
+    # This checks to see if contig length is greater than 1000 bp
     if contig_length > 1000:
-        contigs_gt_1000 += 1
-        assembly_length += contig_length
+        contigs_gt_1000 += 1  
+        assembly_length += contig_length #adds the contig length to the total assembly length
 
-# Write results to the log file
+# opens the log file in append mode to write the results
 with open('log.txt', 'a') as log_file:
-    log_file.write(f'There are {contigs_gt_1000} contigs > 1000 bp in the assembly.\n')
-    log_file.write(f'There are {assembly_length} bp in the assembly.\n')
+    log_file.write(f'There are {contigs_gt_1000} contigs > 1000 bp in the assembly.\n') #write's the number of contigs longer than 1000 bp
+    log_file.write(f'There are {assembly_length} bp in the assembly.\n') # writes the total assembly length
+
 
 ```
 # Analyzing HCMV Transcriptomes Using SPAdes and BLAST
