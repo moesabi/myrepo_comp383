@@ -5,9 +5,9 @@ This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCM
 # Download the Data
 The first step is to download the RNA sequencing data for four samples from the Sequence Read Archive (SRA) using wget. We are going to use python scripts
 ```python
-import os
-# Download SRR5660030..033..44..45 file from the SRA database
-os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660030/SRR5660030') #convertsfrompythontobeUNIX
+import os #executes system commands
+#download SRR5660030, SRR5660033, SRR5660044, SRR5660045 files from the SRA database
+os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660030/SRR5660030') #os. converts from python
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660033/SRR5660033')
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660044/SRR5660044')
 os.system('wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5660045/SRR5660045')
@@ -21,7 +21,7 @@ The next step is to preprocess the data using fastq-dump to convert the SRA file
 
 import os 
 
-#split the separate forward and reverse reads and convert the specified SRA files into FASTQ format using -I and --split
+#split the forward and reverse reads and convert the SRA files into FASTQ format using "-I" and "--split"
 
 
 os.system('fastq-dump -I --split-files SRR5660030')
@@ -33,20 +33,20 @@ os.system('fastq-dump -I --split-files SRR5660045')
 # Build the Reference Genome
 We will use the HCMV genome as the reference genome for our analysis. We will download the genome from NCBI and use bowtie2-build to build the index.
 ```python
-import os
+import os  
 import Bio
 from Bio import Entrez
-# Fetch the HCMV genome sequence from the NCBI nucleotide database
-Entrez.email = "mohammed16alsawi@gmail.com"
-handle = Entrez.efetch(db="nucleotide", id='NC_006273.2', rettype='fasta')
-fasta = handle.read()
+#fetches HCMV genome sequence from NCBI database
+Entrez.email = "mohammed16alsawi@gmail.com" #email for Entrez module
+handle = Entrez.efetch(db="nucleotide", id='NC_006273.2', rettype='fasta') #retrieves genome sequence from NCBI 
+fasta = handle.read() 
 handle.close()
-with open('HCMV.fasta', 'w') as f:
+with open('HCMV.fasta', 'w') as f: #save the HCMV genome sequence as a fasta file
     f.write(fasta)
-# Build the Bowtie2 index using the HCMV genome sequence
+#builds the Bowtie2 index using the HCMV genome sequence
 os.system('bowtie2-build HCMV.fasta HCMV')
-# Run Bowtie2 alignment for each of the four samples
-print('starting bowtie2 .sam')
+#run Bowtie2 alignment for all four samples
+print('starting bowtie2 .sam') #displays the start of alignment process 'start bowtie2.sam' 
 os.system('bowtie2 --quiet -x HCMV -1 SRR5660030_1.fastq -2 SRR5660030_2.fastq -S HCMV30mapped.sam')
 os.system('bowtie2 --quiet -x HCMV -1 SRR5660033_1.fastq -2 SRR5660033_2.fastq -S HCMV33mapped.sam')
 os.system('bowtie2 --quiet -x HCMV -1 SRR5660044_1.fastq -2 SRR5660044_2.fastq -S HCMV44mapped.sam')
@@ -228,4 +228,4 @@ with open("blast_top_hits.log", "w") as log_file:
             # Write the output line to the log file
             log_file.write(output_line)
 
-            ```
+```
