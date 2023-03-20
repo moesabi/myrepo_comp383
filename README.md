@@ -1,6 +1,6 @@
 # myrepo_comp383 
 # HCMV Transcriptome Analysis Pipeline
-This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCMV) using RNA sequencing data.
+This is a pipeline for analyzing the transcriptome of Human Cytomegalovirus (HCMV) using specific sequencing data.
 
 # Download the Data
 The first step is to download the RNA sequencing data for four samples from the Sequence Read Archive (SRA) using wget. We are going to use python scripts
@@ -31,7 +31,7 @@ os.system('fastq-dump -I --split-files SRR5660045')
 ```
 
 # Build the Reference Genome
-We will use the HCMV genome as the reference genome for our analysis. We will download the genome from NCBI and use bowtie2-build to build the index.
+Use the HCMV genome as the reference genome for analysis. Download the genome from NCBI and use bowtie2-build to build the index.
 ```python
 import os  
 import Bio
@@ -55,7 +55,7 @@ os.system('bowtie2 --quiet -x HCMV -1 SRR5660045_1.fastq -2 SRR5660045_2.fastq -
 ```
 
 # Map the Reads to the Reference Genome
-We will use bowtie2 to map the reads to the reference genome and filter out the unmapped reads.
+Use bowtie2 to map the reads to the reference genome and filter out the unmapped reads.
 ```python
 import os
 
@@ -108,7 +108,7 @@ for s in samples_list:
 
 ```
 # SPAdes assembly 
-We  use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to a log file
+Use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to a log file
 ```python
 import os
 # define the dictionary to store sample names and their corresponding FASTQ files
@@ -139,8 +139,7 @@ with open('log.txt', 'a') as log_file:
 
 
 # Assembling the Longest Contig and Running BLAST+ Search
-
-
+Parse the file containing contigs in FASTA format and count the number of contigs longer than 1000 bp and then calculate the total assembly length and write the results to a log file.
 
  ```python
  
@@ -171,7 +170,9 @@ with open('log.txt', 'a') as log_file:
 
 ```
 # Analyzing HCMV Transcriptomes Using SPAdes and BLAST
-reads the SPAdes assembly output and identifies the longest contig which is then saved to a file. The longest contig is then used in a BLAST+ NCBI nr  
+
+Read the SPAdes assembly output file, find the longest contig, and save to a new file. Then uses the longest contig as a query to perform a BLAST+ search against the nr nucleotide database and saves the results in an XML file.
+
 ```python
  
 from Bio import SeqIO
@@ -212,25 +213,26 @@ result_handle.close() #close the result handle
 ```
 
 # Perform BLAST search on longest contig from SPAdes assembly
-outputs the top 10 outputs with the criteria, "sacc   pident   length   qstart   qend   sstart   send   bitscore   evalue   stitle"
+
+Parse the BLAST result XML file using NCBIXML module and extract the top 10 alignments for each. Write into to a log file, including the accession number, percentage identity, alignment length, query start and end, subject start and end, bitscore, e-value, and alignment title
 
 ```python
 
-from Bio.Blast import NCBIXML
+from Bio.Blast import NCBIXML #biopython library modules
 
-# Parse the BLAST result XML file
+#Opens and parses the BLAST result XML file
 with open("blast_result.xml", "r") as result_handle:
     blast_records = list(NCBIXML.parse(result_handle))
 
-# Write the top 10 hits to a log file
+#writes the top 10 hits to a log file
 with open("blast_top_hits.log", "w") as log_file:
     # Write the header row
     log_file.write("sacc\tpident\tlength\tqstart\tqend\tsstart\tsend\tbitscore\tevalue\tstitle\n")
 
-    # Iterate over the BLAST records and alignments
+    # loop through each records in the BLAST results
     for record in blast_records:
-        for alignment in record.alignments[:10]:  # Limit to top 10 hits
-            hsp = alignment.hsps[0]  # Only keep the best HSP
+        for alignment in record.alignments[:10]:  # Limit to top 10 hits and loops through the top 10 alignments for each record
+            hsp = alignment.hsps[0]  # Only keep the best high scoring segment pair 
 
             # Extract the information and format the output
             output_line = f"{alignment.accession}\t{hsp.identities * 100 / hsp.align_length:.2f}\t{hsp.align_length}\t{hsp.query_start}\t{hsp.query_end}\t{hsp.sbjct_start}\t{hsp.sbjct_end}\t{hsp.bits}\t{hsp.expect}\t{alignment.title}\n"
