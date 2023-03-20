@@ -213,6 +213,8 @@ with open("blast_result.xml", "w") as output_file:
     output_file.write(result_handle.read()) #write the BLAST result to the output file
 
 result_handle.close() #close the result handle 
+
+#Output file in GitHub as "blast_result.xml"
 ```
 
 # Perform BLAST search on longest contig from SPAdes assembly
