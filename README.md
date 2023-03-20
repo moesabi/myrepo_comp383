@@ -175,28 +175,29 @@ reads the SPAdes assembly output and identifies the longest contig which is then
 ```python
  
 from Bio import SeqIO
-from Bio.Blast import NCBIWWW, NCBIXML
+from Bio.Blast import NCBIWWW, NCBIXML #from the BLAST+ ppt. 
 
-# Read the SPAdes assembly output and find the longest contig
-assembly_file = "contigs.fasta"  
-contigs = SeqIO.parse(assembly_file, "fasta")
-longest_contig = max(contigs, key=lambda x: len(x))
+#reads the SPAdes assembly output and find the longest contig
+assembly_file = "contigs.fasta"  #inputs the assembly file
+contigs = SeqIO.parse(assembly_file, "fasta") #parses the input file as FASTA format
+longest_contig = max(contigs, key=lambda x: len(x)) #finds the longest contig
 
-# Save the longest contig to a file
-with open("longest_contig.fasta", "w") as output_handle:
-    SeqIO.write(longest_contig, output_handle, "fasta")
+#saves the longest contig to a file
+with open("longest_contig.fasta", "w") as output_handle: #opens the output file to be appended 
+    SeqIO.write(longest_contig, output_handle, "fasta") #writes the longest contig to the output file
 
-# Use the longest contig as a BLAST+ input to query the nr nucleotide database
-query_sequence = str(longest_contig.seq)
-blast_program = "blastn"
-blast_database = "nr"
+#use the longest contig as a BLAST+ input to query the nr nucleotide database
+query_sequence = str(longest_contig.seq) # convert the longest contig sequence to a string
+blast_program = "blastn" #uses blastn program to use
+blast_database = "nr" #searches through nr database
 
+#defines the search parameters
 search_parameters = {
-    "entrez_query": "txid10357[Organism:exp]",  # Betaherpesvirinae taxonomy ID
-    "hitlist_size": 10,  # Number of results to return
+    "entrez_query": "txid10357[Organism:exp]",  # this is the betaherpesvirinae taxonomy ID
+    "hitlist_size": 10,  # the number of results to return
 }
 
-result_handle = NCBIWWW.qblast(
+result_handle = NCBIWWW.qblast( #performs BLAST search using the parameters
     blast_program,
     blast_database,
     query_sequence,
@@ -204,10 +205,10 @@ result_handle = NCBIWWW.qblast(
 )
 
 # Save the result to a file
-with open("blast_result.xml", "w") as output_file:
-    output_file.write(result_handle.read())
+with open("blast_result.xml", "w") as output_file: 
+    output_file.write(result_handle.read()) #write the BLAST result to the output file
 
-result_handle.close()
+result_handle.close() #close the result handle 
 ```
 
 # Perform BLAST search on longest contig from SPAdes assembly
