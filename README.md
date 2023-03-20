@@ -59,12 +59,15 @@ We will use bowtie2 to map the reads to the reference genome and filter out the 
 ```python
 import os
 
-# Getting initial read counts
+# created dictionary to store initial read counts
 initial_counts = {}
+#creates list of sample names
 samples_list = ['SRR5660030', 'SRR5660033', 'SRR5660044', 'SRR5660045']
+
+#loop through each sample in the list
 for s in samples_list:
-    with open(f'{s}_1.fastq') as file1:
-        initial_counts[s] = sum([1 for line in file1]) / 4
+    with open(f'{s}_1.fastq') as file1: # opens the file with the sample name and '_1.fastq' ext.
+        initial_counts[s] = sum([1 for line in file1]) / 4 #gets the initial read count by counting lines in the file and dividing by 4
     print(f'{s} has {initial_counts[s]:,} read pairs before filtering')
 
 # Running Bowtie2 on samples and keeping only HCMV index mapped reads
@@ -74,26 +77,28 @@ for s in samples_list:
 
     # Filtering unmapped reads by reading the SAM file and writing mapped reads to a FASTQ file
     post_filter_counts = 0
-    with open(output_sam) as samfile, open(f'{s}_HCMV.fastq', 'w') as fastqfile:
+    
+    #opens the output SAM file and a new FASTQ file for writing
+    with open(output_sam) as samfile, open(f'{s}_HCMV.fastq', 'w') as fastqfile: # loops through each line in the SAM file
         for line in samfile:
-            if line.startswith('@'):
+            if line.startswith('@'): #skips the header lines
                 continue
 
-            parts = line.split('\t')
-            flag_val = int(parts[1])
+            parts = line.split('\t') #splits lines into columns
+            flag_val = int(parts[1]) # gets flag value from the second column
 
-            if flag_val & 4 == 0:
-                post_filter_counts += 1
-                qname_val = parts[0]
+            if flag_val & 4 == 0: # check if the read is mapped ('flag value & 4 is 0')
+                post_filter_counts += 1 #runs increments of the count of filtered reads
+                qname_val = parts[0] # retrieves the values from the SAM file columns
                 seq_val = parts[9]
                 qual_val = parts[10]
-                fastqfile.write(f"@{qname_val}\n{seq_val}\n+\n{qual_val}\n")
+                fastqfile.write(f"@{qname_val}\n{seq_val}\n+\n{qual_val}\n")  # write the mapped read to the new FASTQ file
 
-    post_filter_counts /= 4
+    post_filter_counts /= 4 # divides the post-filter count by 4 to get the number of all read pairs
     print(f'{s} has {post_filter_counts:,} read pairs after filtering')
 
     # Writing read counts to a file
-    with open('log.txt', 'a') as logfile:
+    with open('log.txt', 'a') as logfile: # appends the read counts to a log file
         logfile.write(f'{s} has {initial_counts[s]:,} read pairs before filtering and {post_filter_counts:,} read pairs after filtering.\n')
 
 
