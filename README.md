@@ -100,7 +100,7 @@ for s in samples_list:
     print(f'{s} has {post_filter_counts:,} read pairs after filtering')
 
     # appends the read counts to a file
-    with open('log.txt', 'a') as logfile: # appends the read counts to a log file
+    with open('PipelineProject.log', 'a') as logfile: # appends the read counts to the log file
         logfile.write(f'{s} has {initial_counts[s]:,} read pairs before filtering and {post_filter_counts:,} read pairs after filtering.\n')
 
 
@@ -110,7 +110,7 @@ for s in samples_list:
 
 ```
 # SPAdes assembly 
-Use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to a log file
+Use SPAdes to perform a genome assembly of four different transcriptomes (SRR5660030, SRR5660033, SRR5660044, SRR5660045) and also append the SPAdes command to the log file
 ```python
 import os
 # define the dictionary to store sample names and their corresponding FASTQ files
@@ -132,7 +132,7 @@ spades_command = f'spades.py -k 77,99,127 -t 4 --only-assembler {spades_input.st
 os.system(spades_command)
 
 # wite the SPAdes command to the log file
-with open('log.txt', 'a') as log_file:
+with open('PipelineProject.log', 'a') as log_file:
     log_file.write(f'SPAdes command: {spades_command}\n')
     
     
@@ -141,7 +141,7 @@ with open('log.txt', 'a') as log_file:
 
 
 # Assembling the Longest Contig and Running BLAST+ Search
-Parse the file containing contigs in FASTA format and count the number of contigs longer than 1000 bp and then calculate the total assembly length and write the results to a log file.
+Parse the file containing contigs in FASTA format and count the number of contigs longer than 1000 bp and then calculate the total assembly length and write the results to the log file.
 
  ```python
  
@@ -165,7 +165,7 @@ for record in SeqIO.parse(assembly_file, 'fasta'):
         assembly_length += contig_length #adds the contig length to the total assembly length
 
 # opens the log file in append mode to write the results
-with open('log.txt', 'a') as log_file:
+with open("PipelineProject.log", 'a') as log_file:
     log_file.write(f'There are {contigs_gt_1000} contigs > 1000 bp in the assembly.\n') #write's the number of contigs longer than 1000 bp
     log_file.write(f'There are {assembly_length} bp in the assembly.\n') # writes the total assembly length
 
@@ -219,7 +219,7 @@ result_handle.close() #close the result handle
 
 # Perform BLAST search on longest contig from SPAdes assembly
 
-Parse the BLAST result XML file using NCBIXML module and extract the top 10 alignments for each. Write into to a log file, including the accession number, percentage identity, alignment length, query start and end, subject start and end, bitscore, e-value, and alignment title
+Parse the BLAST result XML file using NCBIXML module and extract the top 10 alignments for each. Write into to the log file, including the accession number, percentage identity, alignment length, query start and end, subject start and end, bitscore, e-value, and alignment title
 
 ```python
 
@@ -230,7 +230,7 @@ with open("blast_result.xml", "r") as result_handle:
     blast_records = list(NCBIXML.parse(result_handle))
 
 #writes the top 10 hits to a log file
-with open("blast_top_hits.log", "w") as log_file:
+with open("PipelineProject.log", "w") as log_file:
     # Write the header row
     log_file.write("sacc\tpident\tlength\tqstart\tqend\tsstart\tsend\tbitscore\tevalue\tstitle\n")
 
